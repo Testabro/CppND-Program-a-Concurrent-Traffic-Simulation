@@ -33,7 +33,7 @@ enum TrafficLightPhase
 {
     red,
     green
-}
+};
 
 class TrafficLight : public TrafficObject
 {
