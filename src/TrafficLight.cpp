@@ -27,8 +27,8 @@ void MessageQueue<T>::send(T &&msg)
 
     // add vector to queue
     std::cout << "   Message" << msg << " will be added to the queue" << std::endl;
-    _queue().push_back(std::move(msg));
-    _cond.notify_one(); // notify client after pushing new T into deque
+    _queue.push_back(std::move(msg));
+    _condition.notify_one(); // notify client after pushing new T into deque
 }
 
 
@@ -79,7 +79,7 @@ void TrafficLight::cycleThroughPhases()
         if (this->getCurrentPhase() == TrafficLightPhase::red) { this->_currentPhase = TrafficLightPhase::green; }
         else if (this->getCurrentPhase() == TrafficLightPhase::green) { this->_currentPhase = TrafficLightPhase::red; }
         //sends an update method to the message queue using move semantics
-        //MessageQueue<T>::send(T &&msg)
+        _msg_queue.send(std::move(getCurrentPhase()));
         //Debug print
         std::cout << this->getCurrentPhase() << std::endl;
 
