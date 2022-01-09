@@ -20,7 +20,7 @@ class MessageQueue
 {
 public:
     void send(T&& type);
-    T&& receive();
+    T receive();
 private:
     std::deque<T> _queue;
     std::condition_variable _condition;
