@@ -32,11 +32,12 @@ void MessageQueue<T>::send(T &&msg)
     // FP.4a : The method send should use the mechanisms std::lock_guard<std::mutex> 
     // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
 
+    std::this_thread::sleep_for(std::chrono::milliseconds(1)); // stdout guard
     // perform vector modification under the lock
     std::lock_guard<std::mutex> ulock(_mutex);
 
     // add vector to queue
-    std::cout << "   Message" << msg << " will be added to the queue" << std::endl;
+    std::cout << "   Message " << msg << " will be added to the queue" << std::endl;
     _queue.push_back(std::move(msg));
     _condition.notify_one(); // notify client after pushing new T into deque
 }
@@ -60,7 +61,7 @@ void TrafficLight::waitForGreen()
     while(true)
     {
         auto light_phase = _msg_queue.receive();
-        if (light_phase == TrafficLightPhase::green) { std::cout << "Green light" << std::endl; return; }
+        if (light_phase == TrafficLightPhase::green) { return; }
         std::this_thread::sleep_for(std::chrono::milliseconds(1));        
     }
 }
@@ -95,8 +96,6 @@ void TrafficLight::cycleThroughPhases()
         else if (this->getCurrentPhase() == TrafficLightPhase::green) { this->_currentPhase = TrafficLightPhase::red; }
         //sends an update method to the message queue using move semantics
         _msg_queue.send(std::move(getCurrentPhase()));
-        //Debug print
-        std::cout << this->getCurrentPhase() << std::endl;
 
         auto t_now = std::chrono::high_resolution_clock::now();
         std::chrono::milliseconds elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t_now - t_start);
